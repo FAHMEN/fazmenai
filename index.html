@@ -110,6 +110,29 @@
         gap: 14px;
     }
     
+    #company-info {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.company-icon {
+    font-size: 80px;
+    color: #facc15;
+    margin-bottom: 8px;
+}
+
+.company-details h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #facc15;
+    margin-bottom: 4px;
+}
+
+.company-details p {
+    font-size: 14px;
+    color: #f1f5f9;
+}
+    
     .spinner {
     width: 40px;
     height: 40px;
@@ -181,6 +204,139 @@
         background: rgba(255, 255, 255, 0.07);
         border-top: 1px solid rgba(255, 255, 255, 0.15);
     }
+    
+#info-fazmen-box {
+    background: rgba(239, 68, 68, 0.2); /* Merah transparan */
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    padding: 4px 8px;
+    display: inline-block;
+    text-align: center;
+    margin: 0 auto 10px auto;
+    max-width: 200px;
+    animation: fadeSlideIn 0.6s ease forwards;
+    opacity: 0;
+}
+
+#info-link {
+    display: inline-flex; /* Sejajarkan ikon & teks */
+    align-items: center;  /* Pastikan vertikalnya rata tengah */
+    gap: 6px;             /* Jarak antara ikon & teks */
+    font-size: 14px;
+    color: #f1f5f9;
+    cursor: pointer;
+}
+
+.info-icon {
+    font-size: 16px;     /* Ukuran ikon */
+    color: #facc15;      /* Warna kuning */
+    vertical-align: middle; /* Pastikan ikon di tengah garis teks */
+}
+
+/* Hover: getar + warna berubah */
+#info-link:hover {
+    color: #facc15;
+    animation: shake 0.4s ease;
+}
+
+/* Klik: efek tekan + gelombang */
+#info-link:active {
+    transform: scale(0.95);
+}
+
+#info-link::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: rgba(250, 204, 21, 0.4); /* Gelombang kuning */
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    pointer-events: none;
+}
+
+#info-link:active::after {
+    transform: translate(-50%, -50%) scale(8);
+    opacity: 0;
+}
+.popup {
+    display: none;
+    position: fixed;
+    top: 20%; /* Lebih ke atas untuk Android */
+    left: 50%;
+    transform: translate(-50%, -20%);
+    width: 90%;
+    max-width: 400px;
+    background: rgba(30, 41, 59, 0.95);
+    color: #f1f5f9;
+    padding: 18px;
+    border-radius: 16px;
+    z-index: 999;
+    backdrop-filter: blur(20px);
+    animation: fadeIn 0.3s ease;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.popup-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.popup-icon {
+    font-size: 26px;
+    color: #facc15;
+}
+
+.popup-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #facc15;
+}
+
+.close-btn {
+    font-size: 20px;
+    cursor: pointer;
+    color: #ef4444;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.popup-content p {
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+/* Animasi masuk (fade + slide) */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animasi getar */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-2px); }
+}
 
     #userInput {
         flex: 1;
@@ -244,7 +400,7 @@
 <div id="chat-container">
 <header>
     <i id="menu-icon" class="ph ph-list"></i>
-    <i class="ph ph-buildings"></i> FAZMEN COMPANY
+    <i class="ph ph-robot"></i> FAZMEN CHAT-AI
 </header>
 <div id="side-menu">
     <a href="#" onclick="location.reload()"><i class="ph ph-house"></i>Beranda</a>
@@ -254,15 +410,46 @@
     <a href="https://fahmen.github.io/hack/" target="_blank"><i class="ph ph-terminal"></i>Hack</a>
     <a href="https://google.com" target="_blank"><i class="ph ph-sign-out"></i>Keluar</a>
 </div>
+<div id="info-fazmen-box">
+    <span id="info-link">
+        <i class="ph ph-info info-icon"></i>
+        FazAI
+    </span>
+</div>
+<div id="info-popup" class="popup">
+    <div class="popup-header">
+        <div class="popup-title">
+            <i class="ph ph-mask-happy popup-icon"></i>
+            <h2>Fahmen</h2>
+        </div>
+        <span class="close-btn" onclick="togglePopup(false)">×</span>
+    </div>
+    <div class="popup-content">
+        <p>
+            Fazmen-AI dibuat tanpa biaya sepeserpun.<br>
+            Pembuat: Fahril (pelajar Indonesia).<br>
+            Cita-cita: Menjadi orang kaya & berilmu.
+        </p>
+    </div>
+</div>
 
 <div id="chatbox"></div>
 
 <div id="input-container">
     <input type="text" id="userInput" placeholder="Tulis pesan...">
-    <button id="sendButton">Kirim</button>
+    <button id="sendButton" class="send-btn" title="Kirim Pesan">
+        <i class="ph ph-paper-plane-right"></i> <!-- Ikon kirim -->
+    </button>
 </div>
 
 <footer>
+<div id="company-info">
+    <i class="ph ph-buildings company-icon"></i>
+    <div class="company-details">
+        <h2>FAZMEN COMPANY</h2>
+        <p>Didirikan oleh Fahril pada tahun 2025</p>
+    </div>
+</div>
     <div id="contact-section">
         <div class="info">
             <h3>Contact:</h3>
@@ -292,6 +479,14 @@
     const sideMenu = document.getElementById('side-menu');
     const popup = document.getElementById('popup');
     const popupText = document.getElementById('popup-text');
+    const infoLink = document.getElementById('info-link');
+const infoPopup = document.getElementById('info-popup');
+
+infoLink.addEventListener('click', () => togglePopup(true));
+
+function togglePopup(show) {
+    infoPopup.style.display = show ? 'block' : 'none';
+}
 
     menuIcon.addEventListener('click', () => {
         sideMenu.classList.toggle('active');
@@ -317,6 +512,11 @@
     messageDiv.classList.add('message', sender);
 
     if (isImage) {
+        // Tambahkan spinner
+        const spinner = createSpinner();
+        messageDiv.appendChild(spinner);
+
+        // Buat elemen gambar
         const img = document.createElement('img');
         img.src = content;
         img.alt = 'Generated Image';
@@ -324,17 +524,27 @@
         img.style.maxWidth = '400px';
         img.style.borderRadius = '12px';
 
-        const spinner = createSpinner();
-        messageDiv.appendChild(spinner);
-
-        img.onload = () => spinner.remove(); // Hapus spinner saat gambar dimuat
+        // Hapus spinner setelah gambar dimuat
+        img.onload = () => spinner.remove();
         messageDiv.appendChild(img);
     } else {
+        // Pesan teks
         messageDiv.textContent = content;
+
+        if (sender === 'bot') {
+            const copyBtn = document.createElement('i');
+            copyBtn.classList.add('ph', 'ph-copy', 'copy-btn');
+            copyBtn.title = "Salin Pesan";
+
+            copyBtn.onclick = () => copyToClipboard(content, copyBtn);
+            messageDiv.appendChild(copyBtn);
+        }
     }
 
-    document.getElementById('chatbox').appendChild(messageDiv);
-    document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+    // Tambahkan ke chatbox & auto-scroll
+    const chatbox = document.getElementById('chatbox');
+    chatbox.appendChild(messageDiv);
+    chatbox.scrollTop = chatbox.scrollHeight;
 }
 
 function createSpinner() {
@@ -477,6 +687,7 @@ function showSuccess(button) {
     userInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendButton.click();
     });
+    
 
     addMessage('bot', '👋 Selamat datang di FAZMEN! Ada yang bisa saya bantu?\n\nKetik /gambar (textnya) untuk membuat gambar text');
 </script></body>
