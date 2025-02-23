@@ -122,6 +122,15 @@
         color: white;
         cursor: pointer;
     }
+    
+    .copy-btn {
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: color 0.2s ease;
+}
+
+.copy-btn:hover { color: #facc15; }
 
     .message {
         max-width: 85%;
@@ -271,12 +280,58 @@
     }
 
     function addMessage(sender, text) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', sender);
-        messageDiv.textContent = text;
-        chatbox.appendChild(messageDiv);
-        chatbox.scrollTop = chatbox.scrollHeight;
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', sender);
+    messageDiv.textContent = text;
+
+    if (sender === 'bot') {
+        const copyBtn = document.createElement('i');
+        copyBtn.classList.add('ph', 'ph-copy', 'copy-btn');
+        copyBtn.title = "Salin Pesan";
+
+        copyBtn.onclick = () => copyToClipboard(text, copyBtn);
+        messageDiv.appendChild(copyBtn);
     }
+
+    chatbox.appendChild(messageDiv);
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+function copyToClipboard(text, button) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showSuccess(button);
+        }).catch(() => {
+            fallbackCopy(text, button);
+        });
+    } else {
+        fallbackCopy(text, button);
+    }
+}
+
+function fallbackCopy(text, button) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    try {
+        document.execCommand('copy');
+        showSuccess(button);
+    } catch (err) {
+        showPopup('❌ Gagal menyalin.');
+    }
+
+    document.body.removeChild(textarea);
+}
+
+function showSuccess(button) {
+    button.classList.replace('ph-copy', 'ph-check');
+    showPopup('✅ Pesan AI telah disalin!');
+    setTimeout(() => button.classList.replace('ph-check', 'ph-copy'), 1500);
+}
 
     async function getAIResponse(message) {
         addMessage('user', message);
@@ -284,7 +339,7 @@
         addMessage('bot', 'Mengetik...');
 
         try {
-            const response = await fetch(`https://bk9.fun/ai/gemini?q=jika%20ditanya%20 siapa%20 kamu%20 kamu%20 jawab%20fazmenai%20 dan%20 bila%20 ditanya%20 siapa%20pembuatmu%20 jawab%20 fahril%20 aja%20 begitu%20dan%20ini%20 merupakan%20 pertanyaan%20 dari%20pengguna%20jawab%20 aja%20 dengan%20keahlianmu%20 jawab%20 dengan%20 jawaban%20 terbaik%20 ini%20 pertanyaan%20 dari%20 mereka=${encodeURIComponent(message)}`);
+            const response = await fetch(`https://bk9.fun/ai/gemini?q=jika%20ditanya%20 siapa%20 kamu%20 kamu%20 jawab%20fazmenai%20 dan%20 bila%20 ditanya%20 siapa%20pembuatmu%20 jawab%20 fahril%20jawab%20 aja%20pertanyaan%20  atau%20sapaan%20 ini%20 jangan%20 bahas%20 topik%20 diatas%20${encodeURIComponent(message)}`);
             const data = await response.json();
             const botReply = data.BK9 || 'Tidak ada balasan.';
             chatbox.querySelector('.bot:last-child').remove();
@@ -294,6 +349,11 @@
             addMessage('bot', '⚠️ Terjadi kesalahan. Coba lagi nanti.');
         }
     }
+    
+    window.addEventListener('beforeunload', (e) => {
+    e.preventDefault();
+    e.returnValue = ''; // Diperlukan untuk sebagian browser agar popup muncul
+});
 
     sendButton.addEventListener('click', () => {
         const message = userInput.value.trim();
