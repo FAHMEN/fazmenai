@@ -587,6 +587,18 @@ function createSpinner() {
     return spinner;
 }
 
+function generateUserId() {
+    let userId = localStorage.getItem('userId');
+    if (!userId) {
+        userId = `User-${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('userId', userId);
+    }
+    return userId;
+}
+
+const userId = generateUserId();
+
+
 async function getAIResponse(message) {
     addMessage('user', message);
     userInput.value = '';
@@ -595,7 +607,7 @@ async function getAIResponse(message) {
     const typingEffect = addTypingAnimation();
 
     try {
-        const response = await fetch(`https://api.ashlynn-repo.tech/ask?question=${encodeURIComponent(message)}&userid=Fahmen-1234-5678`);
+        const response = await fetch(`https://api.ashlynn-repo.tech/ask?question=${encodeURIComponent(message)}&userid=${userId}`);
         const data = await response.json();
 
         let botReply = data.response || 'Tidak ada balasan.';
