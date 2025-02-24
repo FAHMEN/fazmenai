@@ -48,6 +48,41 @@
     font-size: 22px;
 }
 
+/* Animasi "Mengetik..." dengan bouncing dots */
+.typing-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 8px 14px;
+    background: none; /* Hapus background merah */
+    border-radius: 18px;
+    max-width: 85%;
+}
+
+.bouncing-dots {
+    display: flex;
+    justify-content: space-between;
+    width: 50px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: #facc15; /* Warna kuning */
+    border-radius: 50%;
+    animation: bounce 1.5s infinite;
+}
+
+.dot:nth-child(1) { animation-delay: 0s; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Animasi bouncing */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
     header {
         display: flex;
         justify-content: space-between;
@@ -407,6 +442,7 @@
     <a href="#" onclick="showPopup('Fazmen didirikan oleh Fahril. Perusahaan ini bergerak di bidang teknologi AI dan software.')"><i class="ph ph-info"></i>Tentang Kami</a>
     <a href="#" onclick="showPopup('Fitur belum tersedia atau masih dalam pengembangan.')"><i class="ph ph-gear"></i>Pengaturan</a>
      <a href="https://wa.me/6285876902820" target="_blank"><i class="ph ph-user"></i>Contact</a>
+          <a href="https://donatesuport.rf.gd" target="_blank"><i class="ph ph-hand-heart"></i>Donasi bang</a>
     <a href="https://fahmen.github.io/hack/" target="_blank"><i class="ph ph-terminal"></i>Hack</a>
     <a href="https://google.com" target="_blank"><i class="ph ph-sign-out"></i>Keluar</a>
 </div>
@@ -455,13 +491,13 @@
             <h3>Contact:</h3>
             anonymousteam91@gmail.com
             <div class="divider"></div>
-            <h3>Nama Perusahaan:</h3>
+            <h3>Perusahaan:</h3>
             FAZMEN
             <div class="divider"></div>
-            <h3>Number:</h3>
-            6285876902820
+            <h3>Apa itu Fazmen?</h3>
+            Fazmen adalah perusahaan yang bergerak di bidang produk, software, dan AI, berfokus pada meningkatkan kualitas hidup dan mempermudah proses kerja dengan solusi inovatif dan efektif.
             <div class="divider"></div>
-            <h3>Alamat:</h3>
+            <h3>IP Server Faz-AI:</h3>
             INDONESIA
             <div class="divider"></div>
             <h3>Pengembang & Owner:</h3>
@@ -512,11 +548,9 @@ function togglePopup(show) {
     messageDiv.classList.add('message', sender);
 
     if (isImage) {
-        // Tambahkan spinner
         const spinner = createSpinner();
         messageDiv.appendChild(spinner);
 
-        // Buat elemen gambar
         const img = document.createElement('img');
         img.src = content;
         img.alt = 'Generated Image';
@@ -524,24 +558,24 @@ function togglePopup(show) {
         img.style.maxWidth = '400px';
         img.style.borderRadius = '12px';
 
-        // Hapus spinner setelah gambar dimuat
         img.onload = () => spinner.remove();
         messageDiv.appendChild(img);
     } else {
-        // Pesan teks
-        messageDiv.textContent = content;
+        // **Perbaiki format nomor dan enter**
+        content = content.replace(/(\d+)\.\s*\*\*(.*?)\*\*/g, '<br><br><strong>$1. $2</strong><br>');
+
+        // Tambahkan ke div dengan innerHTML agar format HTML bekerja
+        messageDiv.innerHTML = content;
 
         if (sender === 'bot') {
             const copyBtn = document.createElement('i');
             copyBtn.classList.add('ph', 'ph-copy', 'copy-btn');
             copyBtn.title = "Salin Pesan";
-
             copyBtn.onclick = () => copyToClipboard(content, copyBtn);
             messageDiv.appendChild(copyBtn);
         }
     }
 
-    // Tambahkan ke chatbox & auto-scroll
     const chatbox = document.getElementById('chatbox');
     chatbox.appendChild(messageDiv);
     chatbox.scrollTop = chatbox.scrollHeight;
@@ -556,7 +590,9 @@ function createSpinner() {
 async function getAIResponse(message) {
     addMessage('user', message);
     userInput.value = '';
-    addMessage('bot', 'Mengetik...');
+
+    // Tambahin animasi loading
+    const typingEffect = addTypingAnimation();
 
     try {
         const response = await fetch(`https://api.ashlynn-repo.tech/ask?question=${encodeURIComponent(message)}&userid=Fahmen-1234-5678`);
@@ -572,21 +608,36 @@ async function getAIResponse(message) {
             botReply = "Fahril";
         }
 
-        // Hapus "Mengetik..." sebelum menampilkan balasan
-        const lastBotMessage = chatbox.querySelector('.bot:last-child');
-        if (lastBotMessage && lastBotMessage.textContent === "Mengetik...") {
-            lastBotMessage.remove();
+        // **Hapus animasi typing sebelum menampilkan jawaban**
+        if (typingEffect) {
+            typingEffect.remove();
         }
 
         addMessage('bot', botReply);
     } catch (error) {
         console.error("Error fetching AI response:", error);
-        const lastBotMessage = chatbox.querySelector('.bot:last-child');
-        if (lastBotMessage && lastBotMessage.textContent === "Mengetik...") {
-            lastBotMessage.remove();
+        
+        if (typingEffect) {
+            typingEffect.remove(); // **Hapus animasi loading walaupun error**
         }
+
         addMessage('bot', '⚠️ Terjadi kesalahan. Coba lagi nanti.');
     }
+}
+
+function addTypingAnimation() {
+    const typingDiv = document.createElement('div');
+    typingDiv.classList.add('message', 'bot', 'typing-container');
+    typingDiv.innerHTML = `
+        <div class="bouncing-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    `;
+    chatbox.appendChild(typingDiv);
+    chatbox.scrollTop = chatbox.scrollHeight;
+    return typingDiv;
 }
 
 function addLoadingAnimation(sender) {
@@ -641,15 +692,22 @@ document.getElementById('userInput').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendMessage();
 });
 
-function copyToClipboard(text, button) {
+function copyToClipboard(content, button) {
+    // Buat elemen dummy untuk menyalin teks tanpa HTML
+    const tempElement = document.createElement("div");
+    tempElement.innerHTML = content;
+
+    // Ambil teks tanpa tag HTML
+    const plainText = tempElement.innerText;
+
     if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => {
+        navigator.clipboard.writeText(plainText).then(() => {
             showSuccess(button);
         }).catch(() => {
-            fallbackCopy(text, button);
+            fallbackCopy(plainText, button);
         });
     } else {
-        fallbackCopy(text, button);
+        fallbackCopy(plainText, button);
     }
 }
 
